@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Living Organisation Diagnostic™ — Rinki Ohen Conseil</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+:root {
+  --teal:#1D9E75;--teal-light:#E1F5EE;--teal-dark:#085041;--teal-mid:#0F6E56;
+  --green:#639922;--green-light:#EAF3DE;
+  --blue:#378ADD;--blue-light:#E6F1FB;
+  --amber:#BA7517;--amber-light:#FAEEDA;
+  --coral:#D85A30;--coral-light:#FAECE7;
+  --bg:#FAF9F6;--white:#FFFFFF;
+  --text:#1C1C1A;--text-muted:#6B6B65;--text-hint:#9E9E96;
+  --border:rgba(28,28,26,0.12);--border-soft:rgba(28,28,26,0.07);
+  --serif:'Cormorant Garamond',Georgia,serif;
+  --sans:'DM Sans',sans-serif;
+  --radius:12px;--radius-sm:8px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);min-height:100vh;padding:2rem 1rem 4rem}
+.container{max-width:680px;margin:0 auto}
+
+.header{text-align:center;padding:2rem 0 2.5rem;border-bottom:0.5px solid var(--border);margin-bottom:2.5rem}
+.brand{display:inline-flex;align-items:center;gap:8px;font-size:11px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--teal);margin-bottom:1.25rem}
+.brand-dot{width:5px;height:5px;border-radius:50%;background:var(--teal)}
+.header h1{font-family:var(--serif);font-size:38px;font-weight:300;line-height:1.2;color:var(--text);margin-bottom:.5rem;letter-spacing:-.01em}
+.header h1 em{font-style:italic;color:var(--teal)}
+.header-sub{font-size:13px;color:var(--text-muted);letter-spacing:.03em;line-height:1.6}
+.header-intro{font-family:var(--serif);font-size:16px;font-style:italic;color:var(--text-muted);margin-top:1rem;line-height:1.7;max-width:480px;margin-left:auto;margin-right:auto}
+
+.progress-wrap{margin-bottom:2.5rem}
+.progress-meta{display:flex;justify-content:space-between;font-size:11px;color:var(--text-hint);letter-spacing:.05em;text-transform:uppercase;margin-bottom:.5rem}
+.progress-track{height:2px;background:var(--border-soft);border-radius:2px;overflow:hidden}
+.progress-fill{height:100%;background:var(--teal);border-radius:2px;transition:width .5s ease}
+
+.step{display:none}
+.step.active{display:block;animation:fadeIn .35s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+.step-header{display:flex;align-items:flex-start;gap:1rem;margin-bottom:2rem;padding-bottom:1.25rem;border-bottom:0.5px solid var(--border-soft)}
+.step-icon{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;border:0.5px solid var(--border)}
+.step-meta .pillar-num{font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--text-hint);margin-bottom:.2rem}
+.step-meta h2{font-family:var(--serif);font-size:26px;font-weight:400;color:var(--text);line-height:1.2}
+.step-meta .pillar-sub{font-family:var(--serif);font-size:14px;font-style:italic;color:var(--text-muted);margin-top:.2rem}
+
+.question-block{margin-bottom:1.75rem;padding:1.25rem 1.5rem;background:var(--white);border:0.5px solid var(--border-soft);border-radius:var(--radius)}
+.nature-hint{font-family:var(--serif);font-size:14px;font-style:italic;color:var(--teal-mid);line-height:1.65;padding:.625rem .875rem;border-left:2px solid var(--teal);margin-bottom:1.25rem;background:var(--teal-light);border-radius:0 var(--radius-sm) var(--radius-sm) 0}
+.question-num{font-size:10px;font-weight:500;letter-spacing:.08em;color:var(--text-hint);text-transform:uppercase;margin-bottom:.4rem}
+.question-text{font-size:15px;line-height:1.65;color:var(--text);margin-bottom:1.25rem;font-weight:400}
+
+.slider-row{display:flex;align-items:center;gap:12px}
+input[type="range"]{-webkit-appearance:none;flex:1;height:3px;background:var(--border);border-radius:2px;outline:none;cursor:pointer}
+input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;background:var(--teal);border:2px solid var(--white);box-shadow:0 0 0 1px var(--teal);cursor:pointer;transition:transform .15s}
+input[type="range"]::-webkit-slider-thumb:hover{transform:scale(1.2)}
+input[type="range"]::-moz-range-thumb{width:18px;height:18px;border-radius:50%;background:var(--teal);border:2px solid var(--white);cursor:pointer}
+.slider-val{font-family:var(--serif);font-size:16px;font-weight:400;color:var(--teal);min-width:24px;text-align:right}
+.slider-labels{display:flex;justify-content:space-between;margin-top:.5rem;font-size:11px;color:var(--text-hint)}
+
+textarea{width:100%;margin-top:1rem;padding:.75rem 1rem;font-size:13px;font-family:var(--sans);color:var(--text);background:var(--bg);border:0.5px solid var(--border);border-radius:var(--radius-sm);resize:vertical;min-height:60px;line-height:1.6;outline:none;transition:border-color .2s}
+textarea:focus{border-color:var(--teal)}
+textarea::placeholder{color:var(--text-hint)}
+
+.nav{display:flex;align-items:center;justify-content:space-between;padding-top:1.5rem;margin-top:.5rem;border-top:0.5px solid var(--border-soft)}
+.nav-label{font-size:12px;color:var(--text-hint);letter-spacing:.04em}
+button{font-family:var(--sans);font-size:13px;cursor:pointer;border-radius:var(--radius-sm);padding:.6rem 1.5rem;transition:all .15s;letter-spacing:.02em}
+.btn-prev{background:transparent;border:0.5px solid var(--border);color:var(--text-muted)}
+.btn-prev:hover{background:var(--white)}
+.btn-next{background:var(--text);border:none;color:var(--white);font-weight:500}
+.btn-next:hover{background:#333}
+.btn-result{background:var(--teal);border:none;color:var(--white);font-weight:500}
+.btn-result:hover{background:var(--teal-mid)}
+
+/* RESULTS */
+.result-section{display:none}
+.result-section.active{display:block;animation:fadeIn .4s ease}
+.result-header{text-align:center;margin-bottom:2rem;padding-bottom:1.5rem;border-bottom:0.5px solid var(--border-soft)}
+.result-header h2{font-family:var(--serif);font-size:32px;font-weight:300;margin-bottom:.4rem}
+.organism-name{font-family:var(--serif);font-size:20px;font-style:italic;color:var(--teal);margin-top:.5rem}
+
+.radar-wrap{display:flex;justify-content:center;margin:1.5rem 0;background:var(--white);border:0.5px solid var(--border-soft);border-radius:var(--radius);padding:1.5rem}
+
+.narrative-box{padding:1.5rem;background:var(--white);border:0.5px solid var(--border-soft);border-radius:var(--radius);margin:1.25rem 0}
+.narrative-box .narrative-title{font-size:10px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--text-hint);margin-bottom:.75rem}
+.narrative-box p{font-family:var(--serif);font-size:17px;font-weight:300;line-height:1.8;color:var(--text)}
+.narrative-box p strong{font-weight:500;font-style:italic;color:var(--teal-dark)}
+
+.pillars-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:1.25rem 0}
+.pillar-card{padding:1rem 1.25rem;background:var(--white);border:0.5px solid var(--border-soft);border-radius:var(--radius)}
+.pillar-card-label{font-size:10px;font-weight:500;letter-spacing:.08em;text-transform:uppercase;margin-bottom:.4rem}
+.pillar-card-score{font-family:var(--serif);font-size:26px;font-weight:300;margin-bottom:.4rem;line-height:1}
+.pillar-card-score span{font-size:13px;color:var(--text-hint)}
+.pillar-bar-track{height:3px;background:var(--border-soft);border-radius:2px;margin-bottom:.625rem;overflow:hidden}
+.pillar-bar-fill{height:100%;border-radius:2px;transition:width .8s ease}
+.pillar-card-text{font-size:12px;color:var(--text-muted);line-height:1.55}
+
+.synthesis{padding:1.25rem 1.5rem;background:var(--teal-light);border:0.5px solid rgba(29,158,117,0.25);border-radius:var(--radius);margin:1.25rem 0}
+.synthesis-level{font-family:var(--serif);font-size:20px;font-weight:400;color:var(--teal-dark);margin-bottom:.625rem}
+.synthesis p{font-size:13px;color:var(--teal-dark);line-height:1.7}
+.synthesis strong{font-weight:500}
+
+.result-actions{display:flex;gap:10px;margin-top:1.5rem;flex-wrap:wrap}
+.btn-reset{background:transparent;border:0.5px solid var(--border);color:var(--text-muted);font-size:12px;padding:.5rem 1.25rem}
+.btn-reset:hover{background:var(--white)}
+.btn-contact{background:var(--teal);border:none;color:var(--white);font-size:13px;font-weight:500;padding:.6rem 1.5rem;text-decoration:none;border-radius:var(--radius-sm);display:inline-flex;align-items:center;gap:6px}
+.btn-contact:hover{background:var(--teal-mid)}
+
+.footer-note{text-align:center;margin-top:3rem;padding-top:1.5rem;border-top:0.5px solid var(--border-soft);font-size:11px;color:var(--text-hint);letter-spacing:.04em}
+
+@media(max-width:480px){
+  .header h1{font-size:28px}
+  .pillars-grid{grid-template-columns:1fr}
+  .result-actions{flex-direction:column}
+}
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header class="header">
+    <div class="brand"><span class="brand-dot"></span>Rinki Ohen Conseil<span class="brand-dot"></span></div>
+    <h1>Living Organisation<br><em>Diagnostic™</em></h1>
+    <p class="header-sub">5 piliers du vivant · 10 questions · Portrait narratif</p>
+    <p class="header-intro">Toute organisation est un écosystème. La nature nous montre depuis des millions d'années comment construire quelque chose qui dure vraiment.</p>
+  </header>
+
+  <div class="progress-wrap">
+    <div class="progress-meta">
+      <span id="progress-label">Pilier 1 sur 5</span>
+      <span id="progress-pct">0%</span>
+    </div>
+    <div class="progress-track">
+      <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+    </div>
+  </div>
+
+  <!-- PILIER 1 — INTERDÉPENDANCE -->
+  <div class="step active" id="step-0">
+    <div class="step-header">
+      <div class="step-icon" style="background:#E1F5EE">🕸️</div>
+      <div class="step-meta">
+        <div class="pillar-num">Pilier 1</div>
+        <h2>L'Interdépendance</h2>
+        <div class="pillar-sub">Dans la forêt, rien ne survit seul</div>
+      </div>
+    </div>
+
+    <div class="question-block">
+      <div class="nature-hint">Les arbres d'une forêt partagent leurs nutriments via des réseaux mycorhiziens souterrains. Un arbre affaibli est nourri par ses voisins. La solidarité n'est pas un idéal — c'est une stratégie de survie.</div>
+      <div class="question-num">Question 1</div>
+      <div class="question-text">Dans votre organisation, les équipes se nourrissent-elles mutuellement — partageant ressources, information et soutien naturellement ?</div>
+      <div class="slider-row">
+        <input type="range" min="1" max="10" value="5" step="1" id="q1" oninput="upd('q1','v1')">
+        <span class="slider-val" id="v1">5</span>
+      </div>
+      <div class="slider-labels"><span>Silos étanches</span><span>Réseau vivant</span></div>
+    </div>
+
+    <div class="question-block">
+      <div class="question-num">Question 2</div>
+      <div class="question-text">Quand une équipe est en difficulté, les autres se mobilisent-elles spontanément, sans qu'on ait besoin de le demander ?</div>
+      <div class="slider-row">
+        <input type="range" min="1" max="10" value="5" step="1" id="q2" oninput="upd('q2','v2')">
+        <span class="slider-val" id="v2">5</span>
+      </div>
+      <div class="slider-labels"><span>Chacun pour soi</span><span>Solidarité naturelle</span></div>
+      <textarea id="n1" placeholder="Ce que vous observez dans votre organisation..."></textarea>
+    </div>
+  </div>
+
+  <!-- PILIER 2 — FLOW D'ÉNERGIE -->
+  <div class="step" id="step-1">
+    <div class="step-header">
+      <div class="step-icon" style="background:#FAEEDA">⚡</div>
+      <div class="step-meta">
+        <div class="pillar-num">Pilier 2</div>
+        <h2>Le Flow d'Énergie</h2>
+        <div class="pillar-sub">L'énergie circule, elle ne s'accumule pas</div>
+      </div>
+    </div>
+
+    <div class="question-block">
+      <div class="nature-hint">Dans un écosystème sain, l'énergie solaire se transforme et circule sans interruption — de la plante à l'herbivore, au prédateur, au décomposeur. Quand la circulation s'arrête, l'écosystème s'effondre.</div>
+      <div class="question-num">Question 3</div>
+      <div class="question-text">L'énergie collective dans votre organisation — attention, motivation, créativité — circule-t-elle librement ou s'accumule-t-elle en certains points au détriment d'autres ?</div>
+      <div class="slider-row">
+        <input type="range" min="1" max="10" value="5" step="1" id="q3" oninput="upd('q3','v3')">
+        <span class="slider-val" id="v3">5</span>
+      </div>
+      <div class="slider-labels"><span>Blocages, épuisement</span><span>Flux continu, vivant</span></div>
+    </div>
+
+    <div class="question-block">
+      <div class="question-num">Question 4</div>
+      <div class="question-text">Les personnes dans votre organisation ont-elles suffisamment d'espace pour régénérer leur énergie — ou sont-elles en extraction permanente ?</div>
+      <div class="slider-row">
+        <input type="range" min="1" max="10" value="5" step="1" id="q4" oninput="upd('q4','v4')">
+        <span class="slider-val" id="v4">5</span>
+      </div>
+      <div class="slider-labels"><span>Extraction, burnout</span><span>Régénération intégrée</span></div>
+      <textarea id="n2" placeholder="Ce que vous observez..."></textarea>
+    </div>
+  </div>
+
+  <!-- PILIER 3 — CYCLE CIRCULAIRE -->
+  <div class="step" id="step-2">
+    <div class="step-header">
+      <div class="step-icon" style="background:#EAF3DE">♻️</div>
+      <div class="step-meta">
+        <div class="pillar-num">Pilier 3</div>
+        <h2>Le Cycle Circulaire</h2>
+        <div class="pillar-sub">Rien ne se perd, tout se transforme</div>
+      </div>
+    </div>
+
+    <div class="question-block">
+      <div class="nature-hint">Dans la nature, il n'existe pas de déchet — seulement des ressources en transition. Les feuilles mortes d'aujourd'hui sont le sol fertile de demain. Les erreurs d'un écosystème deviennent son apprentissage.</div>
+      <div class="question-num">Question 5</div>
+      <div class="question-text">Les erreurs et les échecs dans votre organisation sont-ils transformés en apprentissage collectif, ou enterrés et répétés ?</div>
+      <div class="slider-row">
+        <input type="range" min="1" max="10" value="5" step="1" id="q5" oninput="upd('q5','v5')">
+        <span class="slider-val" id="v5">5</span>
+      </div>
+      <div class="slider-labels"><span>Cachés, répétés</span><span>Compostés, intégrés</span></div>
+    </div>
+
+    <div class="question-block">
+      <div class="question-num">Question 6</div>
+      <div class="question-text">Les connaissances, les expériences et la mémoire collective sont-elles préservées et réutilisées, ou perdues quand les personnes partent ?</div>
+      <div class="slider-row">
+        <input type="range" min="1" max="10" value="5" step="1" id="q6" oninput="upd('q6','v6')">
+        <span class="slider-val" id="v6">5</span>
+      </div>
+      <div class="slider-labels"><span>Mémoire volatile</span><span>Savoir qui circule</span></div>
+      <textarea id="n3" placeholder="Ce que vous observez..."></textarea>
+    </div>
+  </div>
+
+  <!-- PILIER 4 — BIODIVERSITÉ -->
+  <div class="step" id="step-3">
+    <div class="step-header">
+      <div class="step-icon" style="background:#E6F1FB">🌺</div>
+      <div class="step-meta">
+        <div class="pillar-num">Pilier 4</div>
+        <h2>La Biodiversité</h2>
+        <div class="pillar-sub">La diversité est une force, pas un défi</div>
+      </div>
+    </div>
+
+    <div class="question-block">
+      <div class="nature-hint">Une forêt monoculture s'effondre au premier parasite. Une forêt diverse résiste parce que chaque espèce joue un rôle unique et irremplaçable. La différence n'est pas un problème à gérer — c'est la source de la résilience.</div>
+      <div class="question-num">Question 7</div>
+      <div class="question-text">Les profils différents — façons de penser, d'apprendre, de contribuer — sont-ils activement valorisés dans votre organisation ?</div>
+      <div class="slider-row">
+        <input type="range" min="1" max="10" value="5" step="1" id="q7" oninput="upd('q7','v7')">
+        <span class="slider-val" id="v7">5</span>
+      </div>
+      <div class="slider-labels"><span>Uniformité imposée</span><span>Diversité cultivée</span></div>
+    </div>
+
+    <div class="question-block">
+      <div class="question-num">Question 8</div>
+      <div class="question-text">Les voix minoritaires — ceux qui pensent différemment, qui challengent — ont-elles un espace pour exister et contribuer ?</div>
+      <div class="slider-row">
+        <input type="range" min="1" max="10" value="5" step="1" id="q8" oninput="upd('q8','v8')">
+        <span class="slider-val" id="v8">5</span>
+      </div>
+      <div class="slider-labels"><span>Conformité requise</span><span>Dissidence bienvenue</span></div>
+      <textarea id="n4" placeholder="Ce que vous observez..."></textarea>
+    </div>
+  </div>
+
+  <!-- PILIER 5 — FEEDBACK ADAPTATIF -->
+  <div class="step" id="step-4">
+    <div class="step-header">
+      <div class="step-icon" style="background:#FAECE7">🌀</div>
+      <div class="step-meta">
+        <div class="pillar-num">Pilier 5</div>
+        <h2>Le Feedback Adaptatif</h2>
+        <div class="pillar-sub">S'auto-réguler en temps réel</div>
+      </div>
+    </div>
+
+    <div class="question-block">
+      <div class="nature-hint">Le corps humain maintient sa température à 37°C sans y penser — des milliers de boucles de feedback opèrent en permanence. Un écosystème vivant se régule lui-même. Il n'attend pas un rapport annuel pour s'ajuster.</div>
+      <div class="question-num">Question 9</div>
+      <div class="question-text">Votre organisation détecte-t-elle les signaux faibles — tensions, désengagement, opportunités émergentes — avant qu'ils deviennent des crises ?</div>
+      <div class="slider-row">
+        <input type="range" min="1" max="10" value="5" step="1" id="q9" oninput="upd('q9','v9')">
+        <span class="slider-val" id="v9">5</span>
+      </div>
+      <div class="slider-labels"><span>Réactive, en retard</span><span>Anticipatrice, vivante</span></div>
+    </div>
+
+    <div class="question-block">
+      <div class="question-num">Question 10</div>
+      <div class="question-text">Quand quelque chose ne fonctionne pas, l'organisation s'ajuste-t-elle rapidement — ou attend-elle la prochaine réunion de direction ?</div>
+      <div class="slider-row">
+        <input type="range" min="1" max="10" value="5" step="1" id="q10" oninput="upd('q10','v10')">
+        <span class="slider-val" id="v10">5</span>
+      </div>
+      <div class="slider-labels"><span>Lente, procédurale</span><span>Ajustement naturel</span></div>
+      <textarea id="n5" placeholder="Ce que vous observez..."></textarea>
+    </div>
+  </div>
+
+  <!-- RÉSULTATS -->
+  <div class="result-section" id="results">
+    <div class="result-header">
+      <div class="brand" style="justify-content:center;margin-bottom:1rem"><span class="brand-dot"></span>Portrait de votre organisation vivante<span class="brand-dot"></span></div>
+      <h2>Votre écosystème organisationnel</h2>
+      <div class="organism-name" id="organism-name"></div>
+    </div>
+
+    <div class="radar-wrap">
+      <canvas id="radarChart" width="300" height="300" role="img" aria-label="Radar des 5 piliers du vivant dans l'organisation">Visualisation des 5 piliers du vivant.</canvas>
+    </div>
+
+    <div class="narrative-box">
+      <div class="narrative-title">Portrait narratif</div>
+      <p id="narrative-text"></p>
+    </div>
+
+    <div class="pillars-grid" id="pillar-cards"></div>
+
+    <div class="synthesis" id="synthesis"></div>
+
+    <div class="result-actions">
+      <button class="btn-reset" onclick="reset()">Recommencer</button>
+      <a class="btn-contact" href="mailto:marceline@rinkiohenconseil.com?subject=Living Organisation Diagnostic — Suite">Parlons de votre écosystème →</a>
+    </div>
+  </div>
+
+  <!-- NAV -->
+  <div class="nav" id="nav">
+    <button class="btn-prev" id="btn-prev" onclick="prev()" style="visibility:hidden">← Précédent</button>
+    <span class="nav-label" id="nav-label">Pilier 1 sur 5</span>
+    <button class="btn-next" id="btn-next" onclick="next()">Suivant →</button>
+  </div>
+
+  <div class="footer-note">Rinki Ohen Conseil · Marceline Le Gaufey · rinkiohenconseil.com</div>
+</div>
+
+<script>
+var cur=0,total=5;
+
+var cfg=[
+  {label:'Interdépendance',icon:'🕸️',color:'#1D9E75',qs:['q1','q2'],
+   ins:['Votre organisation fonctionne en silos — les équipes s\'ignorent là où elles devraient se nourrir mutuellement.',
+        'Des connexions existent mais restent fragiles et dépendantes de quelques individus.',
+        'Votre réseau interne est vivant — les équipes se soutiennent naturellement, comme une forêt partagée.']},
+  {label:'Flow d\'Énergie',icon:'⚡',color:'#BA7517',qs:['q3','q4'],
+   ins:['L\'énergie est en extraction permanente — des signes d\'épuisement sont visibles dans vos équipes.',
+        'Le flux existe mais certains nœuds concentrent trop d\'énergie au détriment d\'autres.',
+        'L\'énergie circule et se régénère — votre organisation sait alterner expansion et ressourcement.']},
+  {label:'Cycle Circulaire',icon:'♻️',color:'#639922',qs:['q5','q6'],
+   ins:['Les erreurs sont enfouies, la mémoire s\'évapore — votre organisation réapprend les mêmes leçons.',
+        'Certains apprentissages sont capitalisés, mais le cycle n\'est pas encore systémique.',
+        'Votre organisation transforme ses expériences en sol fertile — rien ne se perd vraiment.']},
+  {label:'Biodiversité',icon:'🌺',color:'#378ADD',qs:['q7','q8'],
+   ins:['La conformité domine — les profils différents peinent à trouver leur place et leur voix.',
+        'La diversité est reconnue mais pas encore pleinement activée comme levier de résilience.',
+        'Votre organisation cultive activement la différence — chaque profil unique enrichit l\'ensemble.']},
+  {label:'Feedback Adaptatif',icon:'🌀',color:'#D85A30',qs:['q9','q10'],
+   ins:['Votre organisation réagit aux crises plutôt que de s\'ajuster en continu — les signaux faibles sont ignorés.',
+        'Des mécanismes d\'ajustement existent mais restent lents ou partiels.',
+        'Votre organisation s\'auto-régule naturellement — elle détecte et intègre les signaux avant qu\'ils deviennent des crises.']}
+];
+
+var organisms=[
+  {name:'La Graine',text:'Votre organisation porte en elle un potentiel immense — mais les conditions de germination ne sont pas encore réunies. Les connexions sont fragiles, l\'énergie se cherche, les cycles d\'apprentissage ne se ferment pas encore. Ce n\'est pas un échec : c\'est un point de départ. La graine sait déjà ce qu\'elle deviendra.'},
+  {name:'Le Plant Émergent',text:'Quelque chose pousse. Votre organisation a trouvé des ancrages — certains piliers sont solides, d\'autres encore en construction. L\'énergie circule par moments, les connexions se tissent progressivement. La prochaine phase est décisive : elle demandera de nourrir ce qui est fragile sans étouffer ce qui émerge.'},
+  {name:'L\'Arbre Jeune',text:'Votre organisation commence à tenir debout seule. Les racines s\'installent, le tronc se forme, les premières branches s\'étendent. Il y a encore des zones de fragilité — des piliers qui demandent attention et soin. Mais la direction est juste. Ce qui a été planté commence à donner de l\'ombre.'},
+  {name:'La Forêt en Croissance',text:'Votre organisation ressemble à une forêt jeune — dense, vivante, traversée par de l\'énergie. Les connexions sont réelles, les cycles fonctionnent, la diversité commence à s\'exprimer. Il reste à approfondir les racines et à laisser l\'intelligence collective s\'exprimer pleinement. La canopée se forme.'},
+  {name:'L\'Écosystème Vivant',text:'Votre organisation est un écosystème à part entière. Elle s\'auto-régule, elle apprend, elle se régénère. Les piliers du vivant sont intégrés — pas comme des pratiques, mais comme des réflexes. Ce que la nature a mis des millions d\'années à perfectionner, vous êtes en train de l\'incarner dans votre organisation.'}
+];
+
+function upd(id,vid){document.getElementById(vid).textContent=document.getElementById(id).value}
+
+function score(qs){return Math.round(qs.reduce(function(s,q){return s+parseInt(document.getElementById(q).value)},0)/qs.length)}
+
+function iIdx(s){return s<=3?0:s<=6?1:2}
+
+function show(n){
+  for(var i=0;i<total;i++)document.getElementById('step-'+i).classList.remove('active');
+  document.getElementById('results').classList.remove('active');
+  var nav=document.getElementById('nav');
+  if(n<total){
+    document.getElementById('step-'+n).classList.add('active');
+    nav.style.display='flex';
+    document.getElementById('btn-prev').style.visibility=n>0?'visible':'hidden';
+    document.getElementById('nav-label').textContent='Pilier '+(n+1)+' sur '+total;
+    document.getElementById('btn-next').textContent=n===total-1?'Révéler mon portrait →':'Suivant →';
+    document.getElementById('btn-next').className=n===total-1?'btn-result':'btn-next';
+    document.getElementById('progress-label').textContent='Pilier '+(n+1)+' sur '+total;
+    document.getElementById('progress-pct').textContent=Math.round((n/total)*100)+'%';
+    document.getElementById('progress-fill').style.width=Math.round((n/total)*100)+'%';
+  } else {
+    document.getElementById('results').classList.add('active');
+    nav.style.display='none';
+    document.getElementById('progress-fill').style.width='100%';
+    document.getElementById('progress-pct').textContent='100%';
+    document.getElementById('progress-label').textContent='Portrait révélé';
+    buildResults();
+  }
+}
+
+function next(){if(cur<total){cur++;show(cur);window.scrollTo(0,0)}}
+function prev(){if(cur>0){cur--;show(cur);window.scrollTo(0,0)}}
+
+function buildResults(){
+  var scores=cfg.map(function(c){return score(c.qs)});
+  var avg=Math.round(scores.reduce(function(a,b){return a+b},0)/5);
+  var minI=scores.indexOf(Math.min.apply(null,scores));
+  var maxI=scores.indexOf(Math.max.apply(null,scores));
+  var oIdx=avg<=2?0:avg<=4?1:avg<=6?2:avg<=8?3:4;
+  var org=organisms[oIdx];
+
+  document.getElementById('organism-name').textContent=org.name;
+  document.getElementById('narrative-text').innerHTML=org.text.replace(new RegExp('('+cfg[maxI].label+'|'+cfg[minI].label+')','g'),'<strong>$1</strong>');
+
+  var cards=document.getElementById('pillar-cards');
+  cards.innerHTML='';
+  cfg.forEach(function(c,i){
+    var s=scores[i],pct=Math.round(s*10);
+    var d=document.createElement('div');
+    d.className='pillar-card';
+    d.innerHTML='<div class="pillar-card-label" style="color:'+c.color+'">'+c.icon+' '+c.label+'</div>'+
+      '<div class="pillar-card-score" style="color:'+c.color+'">'+s+'<span>/10</span></div>'+
+      '<div class="pillar-bar-track"><div class="pillar-bar-fill" style="width:'+pct+'%;background:'+c.color+'"></div></div>'+
+      '<div class="pillar-card-text">'+c.ins[iIdx(s)]+'</div>';
+    cards.appendChild(d);
+  });
+
+  document.getElementById('synthesis').innerHTML=
+    '<div class="synthesis-level">Score global : '+avg+'/10 — '+org.name+'</div>'+
+    '<p>Votre pilier le plus vivant : <strong>'+cfg[maxI].icon+' '+cfg[maxI].label+'</strong> ('+scores[maxI]+'/10) — c\'est votre sol fertile, le point d\'appui de toute transformation.</p>'+
+    '<p style="margin-top:.5rem">Votre pilier à nourrir en priorité : <strong>'+cfg[minI].icon+' '+cfg[minI].label+'</strong> ('+scores[minI]+'/10) — c\'est là que la nature attend votre attention.</p>';
+
+  if(window._rc){window._rc.destroy()}
+  window._rc=new Chart(document.getElementById('radarChart'),{
+    type:'radar',
+    data:{
+      labels:cfg.map(function(c){return c.icon+' '+c.label}),
+      datasets:[{
+        data:scores,
+        backgroundColor:'rgba(29,158,117,0.1)',
+        borderColor:'#1D9E75',
+        borderWidth:2,
+        pointBackgroundColor:cfg.map(function(c){return c.color}),
+        pointBorderColor:'#fff',
+        pointBorderWidth:2,
+        pointRadius:5
+      }]
+    },
+    options:{
+      responsive:false,
+      scales:{r:{min:0,max:10,stepSize:2,
+        ticks:{display:false},
+        grid:{color:'rgba(28,28,26,0.08)'},
+        pointLabels:{font:{size:11,family:"'DM Sans',sans-serif"},color:'#6B6B65'},
+        angleLines:{color:'rgba(28,28,26,0.08)'}
+      }},
+      plugins:{legend:{display:false}}
+    }
+  });
+}
+
+function reset(){
+  cur=0;
+  for(var i=1;i<=10;i++){document.getElementById('q'+i).value=5;document.getElementById('v'+i).textContent='5'}
+  for(var j=1;j<=5;j++)document.getElementById('n'+j).value='';
+  show(0);window.scrollTo(0,0);
+}
+
+show(0);
+</script>
+</body>
+</html>
